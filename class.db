@@ -20,9 +20,9 @@ class Db{
     public function connect(){
 
         // connection to database
-        $dsn      = 'mysql:host=localhost;dbname=portfolio';
+        $dsn      = '';
         $username = 'root';
-        $passwd   = 'password';
+        $passwd   = '';
         $options = [ PDO::ATTR_PERSISTENT          => true,
                      PDO::MYSQL_ATTR_INIT_COMMAND  => 'SET NAMES utf8',
                      PDO::ATTR_ERRMODE             => PDO::ERRMODE_EXCEPTION
