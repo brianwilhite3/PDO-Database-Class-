@@ -1,0 +1,106 @@
+<?php
+
+/**
+ * Description of db.class
+ * 
+ * This class uses the PHP 5 PDO database connection to connect to mysql database and has a set of
+ * methods to execute SQL commands. 
+ * @author Brian Wilhite
+ */
+ 
+\ini_set('default_charset', 'UTF-8');
+\ini_set("memory_limit","128M");
+
+class Db{
+    
+    private $db;
+    private $error;
+    private $stmt;
+
+    public function connect(){
+
+        // connection to database
+        $dsn      = 'mysql:host=localhost;dbname=portfolio';
+        $username = 'root';
+        $passwd   = 'password';
+        $options = [ PDO::ATTR_PERSISTENT          => true,
+                     PDO::MYSQL_ATTR_INIT_COMMAND  => 'SET NAMES utf8',
+                     PDO::ATTR_ERRMODE             => PDO::ERRMODE_EXCEPTION
+         ];
+        
+    
+        try{
+            // Pass connection
+            $this->db = new \PDO($dsn, $username, $passwd, $options);
+               
+       }catch(PDOException $e){
+           $this->error = $e->getMessage();
+        }
+
+    
+}
+
+public function query($query){
+    $this->stmt = $this->db->prepare($query);
+}
+
+public function bind($param, $value, $type = null){
+    if (is_null($type)) {
+        switch (true) {
+            case is_int($value):
+                $type = PDO::PARAM_INT;
+                break;
+            case is_bool($value):
+                $type = PDO::PARAM_BOOL;
+                break;
+            case is_numeric($value):
+                $type = PDO::PARAM_INT;
+                break;
+            case is_null($value):
+                $type = PDO::PARAM_NULL;
+                break;
+            
+            default:
+                $type = PDO::PARAM_STR;
+        }
+    }
+    $this->stmt->bindValue($param, $value, $type);
+}
+
+public function execute(){
+    return $this->stmt->execute();
+}
+public function resultset(){
+    $this->execute();
+    return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function rowCount(){
+    return $this->stmt->rowCount();
+}
+
+public function _lastInsertId(){
+    return $this->db->lastInsertId();
+}
+
+public function _beginTransaction(){
+    return $this->db->beginTransaction();
+}
+
+public function _endTransaction(){
+    return $this->db->commit();
+}
+
+public function _cancelTransaction(){
+    return $this->db->rollBack();
+}
+
+public function debugDumpParams(){
+    return $this->stmt->debugDumpParams();
+}
+
+}
+/* End of file database.php */
+/* Location: php/database.php */
+
+
